@@ -2,15 +2,33 @@
 (function () {
   "use strict";
 
+  var foundStore = TotkFound.create();
   var totkMap = TotkMap.create("map");
+  var markers;
+
   var ui = TotkUi.init({
+    isFound: function (id) {
+      return foundStore.isFound(id);
+    },
     onLayerChange: function (layer) {
       totkMap.setLayer(layer);
       markers.showLayer(layer);
       ui.closeSheet();
     },
+    onFoundChange: function (id, value) {
+      foundStore.setFound(id, value);
+      markers.refresh();
+    },
+    onHideFoundChange: function (hide) {
+      markers.setHideFound(hide);
+    },
   });
-  var markers = TotkMarkers.create(totkMap, ui);
+
+  markers = TotkMarkers.create(totkMap, ui, foundStore);
+
+  foundStore.onChange(function () {
+    /* count refresh handled by markers.refresh callers */
+  });
 
   fetch("data/koroks.json")
     .then(function (res) {
@@ -26,7 +44,9 @@
           "个；详述",
           meta.detailed,
           "；分层",
-          meta.byLayer
+          meta.byLayer,
+          "；已找到",
+          foundStore.count()
         );
       }
     })

@@ -38,6 +38,10 @@
         <button type="button" class="layer-btn" data-layer="depths" role="tab" aria-selected="false">地底</button>
       </nav>
       <p class="count" id="korok-count" aria-live="polite"></p>
+      <label class="hide-found">
+        <input type="checkbox" id="hide-found" />
+        隐藏已找到
+      </label>
     </header>
 
     <main id="map" class="map" role="application" aria-label="王国之泪地图"></main>
@@ -78,10 +82,15 @@
         <p id="sheet-howto"></p>
         <p id="sheet-guide-note" class="guide-note" hidden></p>
       </section>
+      <label class="found-check">
+        <input type="checkbox" id="sheet-found" />
+        <span>已找到</span>
+      </label>
     </aside>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <script src="js/found.js"></script>
     <script src="js/map.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/markers.js"></script>

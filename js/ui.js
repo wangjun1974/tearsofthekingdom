@@ -8,10 +8,18 @@
 
   function initUi(options) {
     var onLayerChange = options.onLayerChange;
+    var onFoundChange = options.onFoundChange;
+    var onHideFoundChange = options.onHideFoundChange;
+    var isFound = options.isFound || function () {
+      return false;
+    };
     var sheet = $("detail-sheet");
     var backdrop = $("sheet-backdrop");
     var closeBtn = $("sheet-close");
     var countEl = $("korok-count");
+    var foundCheckbox = $("sheet-found");
+    var hideFoundCheckbox = $("hide-found");
+    var currentKorok = null;
     var touchStartY = null;
 
     document.querySelectorAll(".layer-btn").forEach(function (btn) {
@@ -26,14 +34,25 @@
       });
     });
 
+    hideFoundCheckbox.addEventListener("change", function () {
+      if (onHideFoundChange) onHideFoundChange(hideFoundCheckbox.checked);
+    });
+
+    foundCheckbox.addEventListener("change", function () {
+      if (!currentKorok || !onFoundChange) return;
+      onFoundChange(currentKorok.id, foundCheckbox.checked);
+    });
+
     function closeSheet() {
       sheet.classList.remove("is-open");
       sheet.setAttribute("aria-hidden", "true");
       backdrop.hidden = true;
       document.body.classList.remove("sheet-open");
+      currentKorok = null;
     }
 
     function openSheet(korok, layerLabel) {
+      currentKorok = korok;
       $("sheet-title").textContent =
         korok.typeLabel + (korok.kind === "carry" ? "（×2）" : "");
       $("sheet-coords").textContent =
@@ -55,6 +74,7 @@
         note.hidden = true;
         note.textContent = "";
       }
+      foundCheckbox.checked = !!isFound(korok.id);
 
       backdrop.hidden = false;
       sheet.classList.add("is-open");
@@ -95,8 +115,24 @@
     return {
       openSheet: openSheet,
       closeSheet: closeSheet,
-      setCount: function (visible, total) {
-        countEl.textContent = "本层 " + visible + " / 共 " + total;
+      isHideFound: function () {
+        return hideFoundCheckbox.checked;
+      },
+      setCount: function (visible, layerTotal, foundTotal, allTotal) {
+        countEl.textContent =
+          "本层 " +
+          visible +
+          "/" +
+          layerTotal +
+          " · 已找 " +
+          foundTotal +
+          "/" +
+          allTotal;
+      },
+      syncFoundCheckbox: function (id) {
+        if (currentKorok && currentKorok.id === id) {
+          foundCheckbox.checked = !!isFound(id);
+        }
       },
     };
   }
