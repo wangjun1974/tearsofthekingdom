@@ -2,6 +2,12 @@
 
 可在 iPhone Safari（或「添加到主屏幕」）使用的 HTML5 地图：在地表 / 天空 / 地底显示呀哈哈位置，点击查看坐标与中文找法。
 
+## 在线访问
+
+**GitHub Pages：** https://wangjun1974.github.io/tearsofthekingdom/
+
+仓库：https://github.com/wangjun1974/tearsofthekingdom
+
 ## 本地运行
 
 请用静态服务器打开（Safari 对 `file://` 加载 JSON 可能受限）：
@@ -10,8 +16,6 @@
 cd tearsofthekingdom
 python3 -m http.server 8080
 ```
-
-手机与电脑同一局域网时，访问 `http://<电脑IP>:8080`。
 
 ## 重新生成数据
 
