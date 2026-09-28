@@ -2,7 +2,7 @@
 
 ## 当前进度
 
-- **状态**：已托管于 GitHub Pages
+- **状态**：已托管于 GitHub Pages；已支持「已找到」勾选（localStorage）
 - **在线地址**：https://wangjun1974.github.io/tearsofthekingdom/
 - **数据**：全量 **900** 个呀哈哈（地表 842 / 天空 58 / 地底 0）
 - **找法补全**：**330** 条 `detailed`（约 **36.7%**），其余 **570** 条为类型中文模板
