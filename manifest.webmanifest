@@ -1,0 +1,24 @@
+{
+  "name": "王国之泪呀哈哈地图",
+  "short_name": "呀哈哈地图",
+  "description": "在王国之泪地图上查找呀哈哈位置与找法",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f1a12",
+  "theme_color": "#1a2e1a",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "assets/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/korok.png",
+      "sizes": "27x27",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

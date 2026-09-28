@@ -1,0 +1,268 @@
+:root {
+  --bg: #0f1a12;
+  --panel: rgba(18, 32, 22, 0.92);
+  --ink: #e8f0e4;
+  --muted: #9bb39a;
+  --accent: #c8e07a;
+  --accent-dim: #6a8f3a;
+  --danger: #e8a070;
+  --sheet-bg: #152419;
+  --radius: 16px;
+  --top-h: calc(56px + env(safe-area-inset-top, 0px));
+  --font-display: "Avenir Next", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC",
+    sans-serif;
+  --font-body: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Segoe UI", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+body {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.top-bar {
+  z-index: 1000;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "brand count"
+    "layers layers";
+  gap: 6px 12px;
+  align-items: center;
+  padding: calc(8px + env(safe-area-inset-top, 0px)) 12px 10px;
+  background: linear-gradient(180deg, #1c3320 0%, #142218 100%);
+  border-bottom: 1px solid rgba(200, 224, 122, 0.18);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.brand {
+  grid-area: brand;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+
+.count {
+  grid-area: count;
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-align: right;
+}
+
+.layer-switch {
+  grid-area: layers;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.layer-btn {
+  appearance: none;
+  border: 1px solid rgba(200, 224, 122, 0.25);
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  min-height: 40px;
+}
+
+.layer-btn.is-active {
+  background: linear-gradient(180deg, #6f9a3a, #4a6f28);
+  border-color: transparent;
+  color: #f4ffe8;
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background: #0a120c;
+}
+
+.attribution {
+  position: fixed;
+  left: 8px;
+  bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+  z-index: 900;
+  margin: 0;
+  max-width: calc(100% - 16px);
+  font-size: 10px;
+  line-height: 1.35;
+  color: rgba(232, 240, 228, 0.75);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
+.attribution a {
+  color: var(--accent);
+  pointer-events: auto;
+}
+
+/* Korok markers */
+.korok-icon {
+  width: 28px !important;
+  height: 28px !important;
+  margin-left: -14px !important;
+  margin-top: -14px !important;
+  border: none;
+  background: transparent;
+}
+
+.korok-icon img {
+  width: 28px;
+  height: 28px;
+  display: block;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
+}
+
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large {
+  background-color: rgba(106, 143, 58, 0.35);
+}
+
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div {
+  background-color: rgba(106, 143, 58, 0.85);
+  color: #f4ffe8;
+  font-weight: 700;
+}
+
+/* Bottom sheet */
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1200;
+  max-height: min(72vh, 520px);
+  padding: 10px 16px calc(18px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(180deg, #1c3020 0%, var(--sheet-bg) 40%);
+  border-radius: var(--radius) var(--radius) 0 0;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45);
+  transform: translateY(110%);
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sheet.is-open {
+  transform: translateY(0);
+}
+
+.sheet-handle {
+  width: 42px;
+  height: 4px;
+  margin: 2px auto 10px;
+  border-radius: 999px;
+  background: rgba(232, 240, 228, 0.28);
+}
+
+.sheet-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ink);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.sheet-title {
+  margin: 0 40px 12px 0;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--accent);
+}
+
+.sheet-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 14px;
+  margin: 0 0 14px;
+}
+
+.sheet-meta dt {
+  margin: 0;
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-transform: none;
+}
+
+.sheet-meta dd {
+  margin: 2px 0 0;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  word-break: break-all;
+}
+
+.sheet-howto h3 {
+  margin: 0 0 6px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.sheet-howto p {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+
+.guide-note {
+  margin-top: 8px !important;
+  font-size: 0.8rem !important;
+  color: var(--danger);
+}
+
+body.sheet-open .map {
+  pointer-events: none;
+}
+
+@media (min-width: 720px) {
+  .top-bar {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas: "brand layers count";
+  }
+
+  .layer-switch {
+    max-width: 360px;
+    justify-self: center;
+  }
+}

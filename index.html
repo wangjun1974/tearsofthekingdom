@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="呀哈哈地图" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#1a2e1a" />
+    <meta name="description" content="王国之泪呀哈哈位置地图：地表、天空、地底" />
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" href="assets/korok.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <title>王国之泪 · 呀哈哈地图</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"
+    />
+    <link rel="stylesheet" href="css/app.css" />
+  </head>
+  <body>
+    <header class="top-bar">
+      <h1 class="brand">呀哈哈地图</h1>
+      <nav class="layer-switch" role="tablist" aria-label="地图层级">
+        <button type="button" class="layer-btn is-active" data-layer="surface" role="tab" aria-selected="true">
+          地表
+        </button>
+        <button type="button" class="layer-btn" data-layer="sky" role="tab" aria-selected="false">天空</button>
+        <button type="button" class="layer-btn" data-layer="depths" role="tab" aria-selected="false">地底</button>
+      </nav>
+      <p class="count" id="korok-count" aria-live="polite"></p>
+    </header>
+
+    <main id="map" class="map" role="application" aria-label="王国之泪地图"></main>
+
+    <p class="attribution">
+      地图瓦片 ©
+      <a href="https://www.zeldadungeon.net/tears-of-the-kingdom-interactive-map/" rel="noopener" target="_blank"
+        >Zelda Dungeon</a
+      >
+      · 坐标数据来自社区整理 · 非官方粉丝工具
+    </p>
+
+    <div id="sheet-backdrop" class="sheet-backdrop" hidden></div>
+    <aside id="detail-sheet" class="sheet" aria-hidden="true" role="dialog" aria-labelledby="sheet-title">
+      <div class="sheet-handle" aria-hidden="true"></div>
+      <button type="button" class="sheet-close" id="sheet-close" aria-label="关闭">×</button>
+      <h2 id="sheet-title" class="sheet-title">呀哈哈</h2>
+      <dl class="sheet-meta">
+        <div>
+          <dt>坐标</dt>
+          <dd id="sheet-coords"></dd>
+        </div>
+        <div>
+          <dt>层级</dt>
+          <dd id="sheet-layer"></dd>
+        </div>
+        <div>
+          <dt>区域</dt>
+          <dd id="sheet-region"></dd>
+        </div>
+        <div>
+          <dt>类型</dt>
+          <dd id="sheet-type"></dd>
+        </div>
+      </dl>
+      <section class="sheet-howto">
+        <h3>如何找到</h3>
+        <p id="sheet-howto"></p>
+        <p id="sheet-guide-note" class="guide-note" hidden></p>
+      </section>
+    </aside>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/markers.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
