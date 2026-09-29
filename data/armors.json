@@ -4,7 +4,8 @@
     "upgradable": 30,
     "amiibo": 8,
     "previewReady": 35,
-    "note": "坐标为便于地图定位的近似值；获取说明为自维护简体中文摘要；preview 为风格化穿戴配色。"
+    "previewMode": "faithful-procedural",
+    "note": "preview 按 TotK 原造型做程序化近似复刻（非拆包资源）。"
   },
   "sets": [
     {
@@ -137,12 +138,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
-        "head": "#4a6e38",
-        "body": "#5b7f40",
-        "legs": "#3a552c",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
+        "head": "#3f6b32",
+        "body": "#4f7d3c",
+        "legs": "#2f4f28",
         "accent": "#c4a35a",
-        "style": "hood"
+        "undershirt": "#e8e0d0",
+        "style": "hood",
+        "outfit": "tunic",
+        "hairVisible": true,
+        "metalness": 0.04,
+        "roughness": 0.82
       }
     },
     {
@@ -275,12 +282,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
-        "head": "#f4f0e8",
-        "body": "#ece6da",
-        "legs": "#d8d0c0",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
+        "head": "#f2eee6",
+        "body": "#ebe4d8",
+        "legs": "#ddd4c4",
         "accent": "#c45c3a",
-        "style": "crown"
+        "undershirt": "#f8f4ec",
+        "style": "feather",
+        "outfit": "tunic",
+        "hairVisible": true,
+        "metalness": 0.03,
+        "roughness": 0.88
       }
     },
     {
@@ -417,12 +430,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
-        "head": "#6a6e72",
-        "body": "#7a7e84",
-        "legs": "#5a5e64",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
+        "head": "#6e7278",
+        "body": "#7a7e86",
+        "legs": "#5c6068",
         "accent": "#c45a2a",
-        "style": "helm"
+        "undershirt": "#4a4e54",
+        "style": "helm",
+        "outfit": "armor",
+        "hairVisible": false,
+        "metalness": 0.55,
+        "roughness": 0.38
       }
     },
     {
@@ -555,12 +574,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#e8c85a",
         "body": "#2a2a32",
         "legs": "#e0c050",
         "accent": "#f0d878",
-        "style": "band"
+        "undershirt": "#e8c4a0",
+        "style": "band",
+        "outfit": "open",
+        "hairVisible": true,
+        "metalness": 0.08,
+        "roughness": 0.7
       }
     },
     {
@@ -693,12 +718,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#5aa8c8",
         "body": "#4a98b8",
         "legs": "#3a7a98",
         "accent": "#e8f0f4",
-        "style": "helm"
+        "undershirt": "#d0e8f0",
+        "style": "helm",
+        "outfit": "armor",
+        "hairVisible": false,
+        "metalness": 0.35,
+        "roughness": 0.32
       }
     },
     {
@@ -835,12 +866,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#2a4a6a",
         "body": "#c45a3a",
         "legs": "#2a4a6a",
         "accent": "#e8a060",
-        "style": "band"
+        "undershirt": "#d8d0c0",
+        "style": "band",
+        "outfit": "suit",
+        "hairVisible": true,
+        "metalness": 0.05,
+        "roughness": 0.75
       }
     },
     {
@@ -977,12 +1014,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#5cb86a",
         "body": "#4aa85a",
         "legs": "#3a8a48",
         "accent": "#c8e878",
-        "style": "hood"
+        "undershirt": "#d0e8c8",
+        "style": "hood",
+        "outfit": "suit",
+        "hairVisible": false,
+        "metalness": 0.06,
+        "roughness": 0.55
       }
     },
     {
@@ -1115,12 +1158,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#e8e0c8",
         "body": "#d8d0b8",
         "legs": "#c8c0a8",
         "accent": "#6a8aaa",
-        "style": "mask"
+        "undershirt": "#f0ebe0",
+        "style": "mask",
+        "outfit": "suit",
+        "hairVisible": false,
+        "metalness": 0.04,
+        "roughness": 0.8
       }
     },
     {
@@ -1257,12 +1306,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
-        "head": "#2a2a2e",
-        "body": "#3a3a42",
-        "legs": "#2a2a32",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
+        "head": "#1e1e22",
+        "body": "#2a2a30",
+        "legs": "#18181c",
         "accent": "#f0d040",
-        "style": "helm"
+        "undershirt": "#222228",
+        "style": "helm",
+        "outfit": "suit",
+        "hairVisible": false,
+        "metalness": 0.02,
+        "roughness": 0.35
       }
     },
     {
@@ -1399,12 +1454,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#5a3a6a",
         "body": "#4a2a5a",
         "legs": "#3a1a4a",
         "accent": "#c8a0d0",
-        "style": "mask"
+        "undershirt": "#3a2a48",
+        "style": "mask",
+        "outfit": "suit",
+        "hairVisible": false,
+        "metalness": 0.05,
+        "roughness": 0.7
       }
     },
     {
@@ -1537,12 +1598,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#c45a2a",
         "body": "#a84820",
         "legs": "#8a3818",
         "accent": "#e8c060",
-        "style": "helm"
+        "undershirt": "#e8c4a0",
+        "style": "helm",
+        "outfit": "barbarian",
+        "hairVisible": false,
+        "metalness": 0.12,
+        "roughness": 0.65
       }
     },
     {
@@ -1679,12 +1746,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
-        "head": "#2a2030",
-        "body": "#1a1020",
-        "legs": "#120818",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
+        "head": "#1a1420",
+        "body": "#120c18",
+        "legs": "#0c0810",
         "accent": "#70e0a0",
-        "style": "mask"
+        "undershirt": "#1a1420",
+        "style": "mask",
+        "outfit": "suit",
+        "hairVisible": false,
+        "metalness": 0.2,
+        "roughness": 0.4
       }
     },
     {
@@ -1821,12 +1894,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#6a7080",
         "body": "#5a6070",
         "legs": "#4a5060",
         "accent": "#b0a060",
-        "style": "helm"
+        "undershirt": "#4a5060",
+        "style": "helm",
+        "outfit": "armor",
+        "hairVisible": false,
+        "metalness": 0.62,
+        "roughness": 0.35
       }
     },
     {
@@ -1963,12 +2042,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
-        "head": "#1a1a22",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
+        "head": "#14141c",
         "body": "#8a1a28",
-        "legs": "#1a1a22",
+        "legs": "#14141c",
         "accent": "#d0a040",
-        "style": "helm"
+        "undershirt": "#2a1018",
+        "style": "helm",
+        "outfit": "armor",
+        "hairVisible": false,
+        "metalness": 0.45,
+        "roughness": 0.4
       }
     },
     {
@@ -2105,12 +2190,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
-        "head": "#e8e8e8",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
+        "head": "#f0f0f0",
         "body": "#d83030",
-        "legs": "#e8e8e8",
+        "legs": "#f0f0f0",
         "accent": "#202020",
-        "style": "mask"
+        "undershirt": "#d83030",
+        "style": "mask",
+        "outfit": "suit",
+        "hairVisible": false,
+        "metalness": 0.05,
+        "roughness": 0.72
       }
     },
     {
@@ -2247,12 +2338,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#e86020",
         "body": "#d05018",
         "legs": "#b04010",
         "accent": "#f0a040",
-        "style": "crown"
+        "undershirt": "#e07030",
+        "style": "crown",
+        "outfit": "open",
+        "hairVisible": true,
+        "metalness": 0.08,
+        "roughness": 0.7
       }
     },
     {
@@ -2389,12 +2486,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#a0d8e8",
         "body": "#80c0d8",
         "legs": "#60a8c8",
         "accent": "#e8f8ff",
-        "style": "crown"
+        "undershirt": "#c8e8f0",
+        "style": "crown",
+        "outfit": "open",
+        "hairVisible": true,
+        "metalness": 0.1,
+        "roughness": 0.55
       }
     },
     {
@@ -2531,12 +2634,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#f0d040",
         "body": "#e0c030",
         "legs": "#c0a020",
         "accent": "#60d0f0",
-        "style": "crown"
+        "undershirt": "#f0e080",
+        "style": "crown",
+        "outfit": "open",
+        "hairVisible": true,
+        "metalness": 0.15,
+        "roughness": 0.5
       }
     },
     {
@@ -2647,12 +2756,19 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#3a2848",
         "body": "#2a1838",
         "legs": "#1a0828",
         "accent": "#9060c0",
-        "style": "hood"
+        "undershirt": "#2a1838",
+        "style": "hood",
+        "outfit": "robe",
+        "hairVisible": false,
+        "cape": true,
+        "metalness": 0.08,
+        "roughness": 0.75
       }
     },
     {
@@ -2777,12 +2893,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#c8a050",
         "body": "#8a7050",
         "legs": "#6a5040",
         "accent": "#f0e060",
-        "style": "helm"
+        "undershirt": "#a08060",
+        "style": "helm",
+        "outfit": "armor",
+        "hairVisible": false,
+        "metalness": 0.4,
+        "roughness": 0.45
       }
     },
     {
@@ -2915,12 +3037,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#70b888",
         "body": "#509868",
         "legs": "#407858",
         "accent": "#c0f0a0",
-        "style": "helm"
+        "undershirt": "#60a878",
+        "style": "helm",
+        "outfit": "armor",
+        "hairVisible": false,
+        "metalness": 0.5,
+        "roughness": 0.35
       }
     },
     {
@@ -2968,12 +3096,18 @@
       ],
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#e8b0d0",
         "body": "#d890c0",
         "legs": "#c870b0",
         "accent": "#f0e0f0",
-        "style": "crown"
+        "undershirt": "#e8c0d8",
+        "style": "crown",
+        "outfit": "robe",
+        "hairVisible": true,
+        "metalness": 0.05,
+        "roughness": 0.85
       }
     },
     {
@@ -3081,12 +3215,19 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#101018",
         "body": "#181820",
         "legs": "#080810",
         "accent": "#404050",
-        "style": "hood"
+        "undershirt": "#101018",
+        "style": "hood",
+        "outfit": "robe",
+        "hairVisible": false,
+        "cape": true,
+        "metalness": 0.15,
+        "roughness": 0.55
       }
     },
     {
@@ -3138,12 +3279,18 @@
       ],
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#e8c4a0",
         "body": "#c4a070",
         "legs": "#a88858",
         "accent": "#8a7040",
-        "style": "none"
+        "undershirt": "#d4b890",
+        "style": "none",
+        "outfit": "tunic",
+        "hairVisible": true,
+        "metalness": 0.02,
+        "roughness": 0.9
       }
     },
     {
@@ -3212,12 +3359,18 @@
       ],
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#c8d0d8",
         "body": "#a8b0b8",
         "legs": "#889098",
         "accent": "#60a0e0",
-        "style": "mask"
+        "undershirt": "#b0b8c0",
+        "style": "mask",
+        "outfit": "armor",
+        "hairVisible": false,
+        "metalness": 0.55,
+        "roughness": 0.3
       }
     },
     {
@@ -3286,12 +3439,18 @@
       ],
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#4a6080",
         "body": "#3a5070",
         "legs": "#2a4060",
         "accent": "#90b0d0",
-        "style": "helm"
+        "undershirt": "#3a5070",
+        "style": "helm",
+        "outfit": "armor",
+        "hairVisible": false,
+        "metalness": 0.65,
+        "roughness": 0.28
       }
     },
     {
@@ -3339,12 +3498,18 @@
       ],
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#3080d0",
         "body": "#2060b0",
         "legs": "#185098",
         "accent": "#f0d040",
-        "style": "hood"
+        "undershirt": "#3080d0",
+        "style": "hood",
+        "outfit": "suit",
+        "hairVisible": false,
+        "metalness": 0.04,
+        "roughness": 0.8
       }
     },
     {
@@ -3473,12 +3638,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#2a6a38",
         "body": "#3a8a48",
         "legs": "#2a5a30",
         "accent": "#e8c060",
-        "style": "hood"
+        "undershirt": "#e8e0d0",
+        "style": "hood",
+        "outfit": "tunic",
+        "hairVisible": false,
+        "metalness": 0.05,
+        "roughness": 0.8
       }
     },
     {
@@ -3607,12 +3778,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#2a6a38",
         "body": "#3a8a48",
         "legs": "#c84030",
         "accent": "#e8c060",
-        "style": "hood"
+        "undershirt": "#e8e0d0",
+        "style": "hood",
+        "outfit": "tunic",
+        "hairVisible": false,
+        "metalness": 0.05,
+        "roughness": 0.8
       }
     },
     {
@@ -3720,12 +3897,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#2a6a38",
         "body": "#3a8a48",
         "legs": "#c84030",
         "accent": "#e8d080",
-        "style": "hood"
+        "undershirt": "#e8e0d0",
+        "style": "hood",
+        "outfit": "tunic",
+        "hairVisible": false,
+        "metalness": 0.05,
+        "roughness": 0.8
       }
     },
     {
@@ -3833,12 +4016,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#f0e8d0",
         "body": "#3a8a48",
         "legs": "#c84030",
         "accent": "#f0d040",
-        "style": "hood"
+        "undershirt": "#e8e0d0",
+        "style": "hood",
+        "outfit": "tunic",
+        "hairVisible": false,
+        "metalness": 0.05,
+        "roughness": 0.8
       }
     },
     {
@@ -3946,12 +4135,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#2a6a38",
         "body": "#3a8a48",
         "legs": "#c84030",
         "accent": "#60a0e0",
-        "style": "hood"
+        "undershirt": "#e8e0d0",
+        "style": "hood",
+        "outfit": "tunic",
+        "hairVisible": false,
+        "metalness": 0.05,
+        "roughness": 0.8
       }
     },
     {
@@ -4080,12 +4275,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#e8e0c0",
         "body": "#d0c8a0",
         "legs": "#b8b088",
         "accent": "#60a0d0",
-        "style": "hood"
+        "undershirt": "#f0ebe0",
+        "style": "hood",
+        "outfit": "tunic",
+        "hairVisible": false,
+        "metalness": 0.05,
+        "roughness": 0.82
       }
     },
     {
@@ -4214,12 +4415,18 @@
       },
       "preview": {
         "skin": "#e8c4a0",
-        "hair": "#f2d060",
+        "hair": "#e8c84a",
+        "eyes": "#3a6cb0",
         "head": "#e8d8a0",
         "body": "#3a8a48",
         "legs": "#c84030",
         "accent": "#f0e060",
-        "style": "mask"
+        "undershirt": "#e8e0d0",
+        "style": "mask",
+        "outfit": "tunic",
+        "hairVisible": false,
+        "metalness": 0.05,
+        "roughness": 0.8
       }
     },
     {
@@ -4349,11 +4556,17 @@
       "preview": {
         "skin": "#e8e8f0",
         "hair": "#f0f0f8",
+        "eyes": "#c02030",
         "head": "#e8e8f0",
         "body": "#f0f0f8",
         "legs": "#d8d8e8",
         "accent": "#c02030",
-        "style": "mask"
+        "undershirt": "#e8e8f0",
+        "style": "mask",
+        "outfit": "armor",
+        "hairVisible": false,
+        "metalness": 0.25,
+        "roughness": 0.4
       }
     }
   ]
