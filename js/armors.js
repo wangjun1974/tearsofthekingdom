@@ -27,11 +27,6 @@
     var armorBlocks = $("sheet-armor");
     var tempMarker = null;
     var currentSet = null;
-    var preview =
-      options.preview ||
-      (global.TotkArmorPreview && $("armor-preview")
-        ? global.TotkArmorPreview.create($("armor-preview"))
-        : null);
 
     function pieceOwnedCount(set) {
       var n = 0;
@@ -266,10 +261,6 @@
       sheet.classList.add("is-open");
       sheet.setAttribute("aria-hidden", "false");
       document.body.classList.add("sheet-open");
-
-      if (preview) {
-        preview.showSet(set);
-      }
     }
 
     function closeSheet() {
@@ -278,7 +269,6 @@
       backdrop.hidden = true;
       document.body.classList.remove("sheet-open");
       currentSet = null;
-      if (preview) preview.stop();
     }
 
     searchEl.addEventListener("input", function () {
