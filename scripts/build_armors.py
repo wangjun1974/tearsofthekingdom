@@ -1453,6 +1453,7 @@ PREVIEW = {
         "head": "#3f6b32", "body": "#4f7d3c", "legs": "#2f4f28", "accent": "#c4a35a",
         "undershirt": "#e8e0d0", "style": "hood", "outfit": "tunic",
         "hairVisible": True, "metalness": 0.04, "roughness": 0.82,
+        "weapon": "traveler_shield",
     },
     "snowquill": {
         "skin": "#e8c4a0", "hair": "#e8c84a", "eyes": "#3a6cb0",
@@ -1657,6 +1658,7 @@ PREVIEW = {
         "head": "#e8e8f0", "body": "#f0f0f8", "legs": "#d8d8e8", "accent": "#c02030",
         "undershirt": "#e8e8f0", "style": "mask", "outfit": "armor",
         "hairVisible": False, "metalness": 0.25, "roughness": 0.4,
+        "weapon": "fierce_deity_sword",
     },
 }
 
@@ -1687,8 +1689,8 @@ def main():
             "upgradable": sum(1 for s in SETS if s.get("upgradable")),
             "amiibo": sum(1 for s in SETS if s.get("amiibo")),
             "previewReady": sum(1 for s in SETS if s.get("preview")),
-            "previewMode": "faithful-procedural",
-            "note": "preview 按 TotK 原造型做程序化近似复刻（非拆包资源）。",
+            "previewMode": "faithful-2d-svg",
+            "note": "preview 为 TotK 原设定 2D SVG 正面复刻（非拆包精灵图；无 360°）。",
         },
         "sets": SETS,
     }

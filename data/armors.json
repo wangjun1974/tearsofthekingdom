@@ -4,8 +4,8 @@
     "upgradable": 30,
     "amiibo": 8,
     "previewReady": 35,
-    "previewMode": "faithful-procedural",
-    "note": "preview 按 TotK 原造型做程序化近似复刻（非拆包资源）。"
+    "previewMode": "faithful-2d-svg",
+    "note": "preview 为 TotK 原设定 2D SVG 正面复刻（非拆包精灵图；无 360°）。"
   },
   "sets": [
     {
@@ -149,7 +149,8 @@
         "outfit": "tunic",
         "hairVisible": true,
         "metalness": 0.04,
-        "roughness": 0.82
+        "roughness": 0.82,
+        "weapon": "traveler_shield"
       }
     },
     {
@@ -4566,7 +4567,8 @@
         "outfit": "armor",
         "hairVisible": false,
         "metalness": 0.25,
-        "roughness": 0.4
+        "roughness": 0.4,
+        "weapon": "fierce_deity_sword"
       }
     }
   ]

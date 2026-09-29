@@ -269,9 +269,6 @@
 
       if (preview) {
         preview.showSet(set);
-        setTimeout(function () {
-          preview.resize();
-        }, 40);
       }
     }
 

@@ -1,541 +1,506 @@
-/* TotK Link wear preview — procedural high-fidelity approximation (no ripped assets) */
+/* TotK Link 2D front-view wear preview (SVG; no ripped sprites; no 360°) */
 (function (global) {
   "use strict";
 
-  var DEFAULT_PREVIEW = {
+  var DEFAULT = {
     skin: "#e8c4a0",
     hair: "#e8c84a",
+    eyes: "#3a6cb0",
     head: "#3f6b32",
     body: "#4f7d3c",
     legs: "#2f4f28",
     accent: "#c4a35a",
     undershirt: "#e8e0d0",
-    eyes: "#3a6cb0",
     style: "hood",
     outfit: "tunic",
     hairVisible: true,
     metalness: 0.05,
     roughness: 0.78,
+    weapon: null,
   };
 
-  function createPreview(container) {
-    if (!global.THREE) {
-      console.warn("[穿戴预览] Three.js 未加载");
-      return null;
+  function mergePreview(raw) {
+    var p = {};
+    var k;
+    for (k in DEFAULT) {
+      if (Object.prototype.hasOwnProperty.call(DEFAULT, k)) p[k] = DEFAULT[k];
     }
-    var THREE = global.THREE;
-    var width = 0;
-    var height = 0;
-    var running = false;
-    var raf = 0;
-    var autoSpin = true;
-    var dragging = false;
-    var lastX = 0;
-    var vel = 0;
+    if (raw) {
+      for (k in raw) {
+        if (Object.prototype.hasOwnProperty.call(raw, k)) p[k] = raw[k];
+      }
+    }
+    return p;
+  }
 
-    var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setClearColor(0x000000, 0);
-    if (THREE.SRGBColorSpace && renderer.outputColorSpace !== undefined) {
-      renderer.outputColorSpace = THREE.SRGBColorSpace;
-    } else if (renderer.outputEncoding !== undefined && THREE.sRGBEncoding !== undefined) {
-      renderer.outputEncoding = THREE.sRGBEncoding;
-    }
-    container.appendChild(renderer.domElement);
-    renderer.domElement.className = "armor-preview-canvas";
-    renderer.domElement.setAttribute(
-      "aria-label",
-      "林克穿戴原造型预览，左右拖动可旋转"
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+  }
+
+  function clothFilter(id, roughness) {
+    var blur = roughness > 0.7 ? 0.15 : 0.05;
+    return (
+      '<filter id="' +
+      id +
+      '" x="-10%" y="-10%" width="120%" height="120%">' +
+      '<feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n"/>' +
+      '<feDiffuseLighting in="n" lighting-color="#ffffff" surfaceScale="' +
+      (roughness > 0.6 ? "0.6" : "0.25") +
+      '"><feDistantLight azimuth="45" elevation="55"/></feDiffuseLighting>' +
+      '<feComposite in2="SourceGraphic" operator="in"/>' +
+      '<feBlend in="SourceGraphic" mode="multiply" result="m"/>' +
+      '<feGaussianBlur in="m" stdDeviation="' +
+      blur +
+      '"/>' +
+      "</filter>"
     );
+  }
 
-    var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
-    camera.position.set(0, 1.2, 4.6);
-    camera.lookAt(0, 1.05, 0);
+  function metalShine(id) {
+    return (
+      '<linearGradient id="' +
+      id +
+      '" x1="0" y1="0" x2="1" y2="1">' +
+      '<stop offset="0%" stop-color="#ffffff" stop-opacity="0.45"/>' +
+      '<stop offset="45%" stop-color="#ffffff" stop-opacity="0"/>' +
+      '<stop offset="100%" stop-color="#000000" stop-opacity="0.25"/>' +
+      "</linearGradient>"
+    );
+  }
 
-    scene.add(new THREE.HemisphereLight(0xfff4e0, 0x2a3a40, 0.95));
-    var key = new THREE.DirectionalLight(0xffffff, 1.05);
-    key.position.set(2.8, 5, 3.2);
-    scene.add(key);
-    var rim = new THREE.DirectionalLight(0x88aaff, 0.35);
-    rim.position.set(-3, 2, -2.5);
-    scene.add(rim);
-    var fill = new THREE.DirectionalLight(0xffe8c8, 0.35);
-    fill.position.set(-1.5, 1.2, 4);
-    scene.add(fill);
+  function buildSvg(p, setName) {
+    var metal = p.metalness >= 0.35;
+    var skin = esc(p.skin);
+    var hair = esc(p.hair);
+    var eyes = esc(p.eyes);
+    var head = esc(p.head);
+    var body = esc(p.body);
+    var legs = esc(p.legs);
+    var accent = esc(p.accent);
+    var shirt = esc(p.undershirt || "#e8e0d0");
+    var fillBody = metal ? "url(#metalBody)" : body;
+    var fillHead = metal ? "url(#metalHead)" : head;
+    var fillLegs = metal ? "url(#metalLegs)" : legs;
 
-    var root = new THREE.Group();
-    scene.add(root);
-
-    var mats = {
-      skin: std("#e8c4a0", 0.02, 0.62),
-      hair: std("#e8c84a", 0.04, 0.55),
-      head: std("#3f6b32", 0.05, 0.78),
-      body: std("#4f7d3c", 0.05, 0.78),
-      legs: std("#2f4f28", 0.05, 0.78),
-      accent: std("#c4a35a", 0.35, 0.45),
-      undershirt: std("#e8e0d0", 0.02, 0.85),
-      eyeWhite: std("#f4f4f0", 0.0, 0.4),
-      eyeIris: std("#3a6cb0", 0.05, 0.35),
-      eyePupil: std("#1a1a22", 0.0, 0.5),
-      lip: std("#d09080", 0.02, 0.55),
-      brow: std("#c4a030", 0.04, 0.55),
-    };
-
-    var figure = buildFigure(THREE, mats);
-    root.add(figure.group);
-
-    function std(hex, metal, rough) {
-      return new THREE.MeshStandardMaterial({
-        color: new THREE.Color(hex),
-        metalness: metal,
-        roughness: rough,
-      });
+    var hairLayer = "";
+    if (p.hairVisible !== false) {
+      hairLayer =
+        '<g id="hair">' +
+        '<ellipse cx="100" cy="48" rx="28" ry="18" fill="' +
+        hair +
+        '"/>' +
+        '<path d="M78 55 Q70 78 76 92" stroke="' +
+        hair +
+        '" stroke-width="10" fill="none" stroke-linecap="round"/>' +
+        '<path d="M122 55 Q130 78 124 92" stroke="' +
+        hair +
+        '" stroke-width="10" fill="none" stroke-linecap="round"/>' +
+        '<path d="M85 58 Q100 72 115 58" fill="' +
+        hair +
+        '"/>' +
+        '<path d="M88 70 Q100 50 112 70 L108 62 Q100 54 92 62 Z" fill="' +
+        hair +
+        '"/>' +
+        '<rect x="86" y="78" width="8" height="18" rx="3" fill="' +
+        hair +
+        '"/>' +
+        '<rect x="106" y="78" width="8" height="18" rx="3" fill="' +
+        hair +
+        '"/>' +
+        "</g>";
     }
 
-    function setColor(m, hex) {
-      if (!m || !hex) return;
-      m.color.set(hex);
-      m.needsUpdate = true;
-    }
+    var headwear = buildHeadwear(p.style, head, accent, fillHead);
+    var outfit = buildOutfit(p.outfit, body, legs, accent, shirt, skin, fillBody, fillLegs, metal);
+    var weapon = buildWeapon(p.weapon, accent, body);
 
-    function setSurf(m, metal, rough) {
-      if (!m) return;
-      if (metal != null) m.metalness = metal;
-      if (rough != null) m.roughness = rough;
-      m.needsUpdate = true;
-    }
+    return (
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 320" class="armor-preview-svg" role="img" aria-label="' +
+      esc(setName || "林克穿戴") +
+      '">' +
+      "<defs>" +
+      clothFilter("cloth", p.roughness || 0.78) +
+      metalShine("metalBody") +
+      metalShine("metalHead") +
+      metalShine("metalLegs") +
+      '<linearGradient id="metalBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' +
+      body +
+      '"/><stop offset="100%" stop-color="' +
+      accent +
+      '" stop-opacity="0.85"/></linearGradient>' +
+      '<linearGradient id="metalHead" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="' +
+      head +
+      '"/><stop offset="100%" stop-color="' +
+      accent +
+      '"/></linearGradient>' +
+      '<linearGradient id="metalLegs" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' +
+      legs +
+      '"/><stop offset="100%" stop-color="' +
+      accent +
+      '" stop-opacity="0.7"/></linearGradient>' +
+      '<radialGradient id="bgGlow" cx="50%" cy="70%" r="55%"><stop offset="0%" stop-color="#c8e07a" stop-opacity="0.18"/><stop offset="100%" stop-color="#0f1a12" stop-opacity="0"/></radialGradient>' +
+      "</defs>" +
+      '<rect width="200" height="320" fill="url(#bgGlow)"/>' +
+      // boots
+      '<rect x="72" y="278" width="22" height="28" rx="4" fill="' +
+      fillLegs +
+      '"/>' +
+      '<rect x="106" y="278" width="22" height="28" rx="4" fill="' +
+      fillLegs +
+      '"/>' +
+      '<rect x="70" y="298" width="26" height="10" rx="3" fill="' +
+      accent +
+      '"/>' +
+      '<rect x="104" y="298" width="26" height="10" rx="3" fill="' +
+      accent +
+      '"/>' +
+      // legs
+      '<rect x="74" y="210" width="20" height="72" rx="6" fill="' +
+      fillLegs +
+      '"/>' +
+      '<rect x="106" y="210" width="20" height="72" rx="6" fill="' +
+      fillLegs +
+      '"/>' +
+      outfit +
+      // neck
+      '<rect x="92" y="118" width="16" height="14" rx="4" fill="' +
+      skin +
+      '"/>' +
+      // head
+      '<ellipse cx="100" cy="88" rx="26" ry="30" fill="' +
+      skin +
+      '"/>' +
+      // ears (Hylian pointed)
+      '<path d="M74 88 L62 70 L76 82 Z" fill="' +
+      skin +
+      '"/>' +
+      '<path d="M126 88 L138 70 L124 82 Z" fill="' +
+      skin +
+      '"/>' +
+      // face
+      '<rect x="88" y="82" width="8" height="3" rx="1" fill="' +
+      hair +
+      '"/>' +
+      '<rect x="104" y="82" width="8" height="3" rx="1" fill="' +
+      hair +
+      '"/>' +
+      '<ellipse cx="90" cy="90" rx="4.5" ry="5" fill="#f4f4f0"/>' +
+      '<ellipse cx="110" cy="90" rx="4.5" ry="5" fill="#f4f4f0"/>' +
+      '<circle cx="90" cy="90" r="2.6" fill="' +
+      eyes +
+      '"/>' +
+      '<circle cx="110" cy="90" r="2.6" fill="' +
+      eyes +
+      '"/>' +
+      '<circle cx="90.5" cy="90" r="1.1" fill="#1a1a22"/>' +
+      '<circle cx="110.5" cy="90" r="1.1" fill="#1a1a22"/>' +
+      '<path d="M98 94 L102 100 L98 100 Z" fill="' +
+      skin +
+      '" stroke="' +
+      accent +
+      '" stroke-opacity="0.15" stroke-width="0.5"/>' +
+      '<rect x="94" y="106" width="12" height="3" rx="1.5" fill="#d09080"/>' +
+      hairLayer +
+      headwear +
+      weapon +
+      "</svg>"
+    );
+  }
 
-    function buildFigure(THREE, mats) {
-      var g = new THREE.Group();
-      var layers = {
-        hair: new THREE.Group(),
-        helms: {},
-        outfits: {},
-        cape: new THREE.Group(),
-      };
-
-      function add(parent, mesh) {
-        parent.add(mesh);
-        return mesh;
-      }
-      function box(parent, w, h, d, m, x, y, z, rx, ry, rz) {
-        var mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
-        mesh.position.set(x || 0, y || 0, z || 0);
-        if (rx) mesh.rotation.x = rx;
-        if (ry) mesh.rotation.y = ry;
-        if (rz) mesh.rotation.z = rz;
-        return add(parent, mesh);
-      }
-      function sph(parent, r, m, x, y, z, sx, sy, sz) {
-        var mesh = new THREE.Mesh(new THREE.SphereGeometry(r, 20, 16), m);
-        mesh.position.set(x || 0, y || 0, z || 0);
-        mesh.scale.set(sx || 1, sy || 1, sz || 1);
-        return add(parent, mesh);
-      }
-      function cyl(parent, rt, rb, h, m, x, y, z, rx, ry, rz, seg) {
-        var mesh = new THREE.Mesh(
-          new THREE.CylinderGeometry(rt, rb, h, seg || 14),
-          m
+  function buildHeadwear(style, head, accent, fillHead) {
+    switch (style) {
+      case "none":
+        return "";
+      case "helm":
+        return (
+          '<g id="helm">' +
+          '<path d="M72 88 Q72 48 100 46 Q128 48 128 88 L120 92 Q100 70 80 92 Z" fill="' +
+          fillHead +
+          '"/>' +
+          '<rect x="74" y="86" width="52" height="8" rx="2" fill="' +
+          accent +
+          '"/>' +
+          '<rect x="82" y="78" width="36" height="10" rx="2" fill="' +
+          accent +
+          '" opacity="0.85"/>' +
+          "</g>"
         );
-        mesh.position.set(x || 0, y || 0, z || 0);
-        if (rx) mesh.rotation.x = rx;
-        if (ry) mesh.rotation.y = ry;
-        if (rz) mesh.rotation.z = rz;
-        return add(parent, mesh);
-      }
-
-      // --- Body core (TotK-like young adult proportions) ---
-      // Boots / lower legs
-      box(g, 0.26, 0.55, 0.28, mats.legs, -0.17, 0.36, 0);
-      box(g, 0.26, 0.55, 0.28, mats.legs, 0.17, 0.36, 0);
-      box(g, 0.28, 0.12, 0.36, mats.accent, -0.17, 0.08, 0.03);
-      box(g, 0.28, 0.12, 0.36, mats.accent, 0.17, 0.08, 0.03);
-      // Feet tip
-      box(g, 0.26, 0.08, 0.16, mats.legs, -0.17, 0.06, 0.18);
-      box(g, 0.26, 0.08, 0.16, mats.legs, 0.17, 0.06, 0.18);
-
-      // Hips
-      box(g, 0.62, 0.28, 0.34, mats.legs, 0, 0.72, 0);
-
-      // Torso undershirt always present lightly
-      box(g, 0.58, 0.55, 0.32, mats.undershirt, 0, 1.12, 0);
-
-      // Default tunic outfit group
-      var tunic = new THREE.Group();
-      box(tunic, 0.7, 0.78, 0.4, mats.body, 0, 1.12, 0);
-      // tunic skirt
-      box(tunic, 0.74, 0.28, 0.42, mats.body, 0, 0.72, 0.02);
-      // sleeves
-      box(tunic, 0.24, 0.55, 0.24, mats.body, -0.48, 1.12, 0);
-      box(tunic, 0.24, 0.55, 0.24, mats.body, 0.48, 1.12, 0);
-      // belt + buckle
-      box(tunic, 0.74, 0.1, 0.43, mats.accent, 0, 0.78, 0);
-      box(tunic, 0.14, 0.12, 0.08, mats.accent, 0, 0.78, 0.22);
-      layers.outfits.tunic = tunic;
-      g.add(tunic);
-
-      // Armor plate outfit
-      var armor = new THREE.Group();
-      box(armor, 0.74, 0.82, 0.44, mats.body, 0, 1.14, 0);
-      box(armor, 0.82, 0.22, 0.5, mats.accent, 0, 1.42, 0.02);
-      box(armor, 0.28, 0.62, 0.28, mats.body, -0.52, 1.12, 0);
-      box(armor, 0.28, 0.62, 0.28, mats.body, 0.52, 1.12, 0);
-      // pauldrons
-      sph(armor, 0.2, mats.accent, -0.55, 1.45, 0, 1.2, 0.8, 1);
-      sph(armor, 0.2, mats.accent, 0.55, 1.45, 0, 1.2, 0.8, 1);
-      box(armor, 0.76, 0.12, 0.46, mats.accent, 0, 0.78, 0);
-      layers.outfits.armor = armor;
-      g.add(armor);
-
-      // Open chest / spaulder (Desert Voe style)
-      var open = new THREE.Group();
-      box(open, 0.5, 0.2, 0.36, mats.undershirt, 0, 1.35, 0);
-      // spaulder
-      box(open, 0.42, 0.18, 0.5, mats.body, -0.28, 1.42, 0.05, 0, 0, 0.2);
-      box(open, 0.18, 0.55, 0.18, mats.skin, -0.48, 1.05, 0);
-      box(open, 0.18, 0.55, 0.18, mats.skin, 0.48, 1.05, 0);
-      // wrap pants already from legs mat on hips - add sash
-      box(open, 0.7, 0.35, 0.38, mats.legs, 0, 0.85, 0);
-      box(open, 0.72, 0.1, 0.4, mats.accent, 0, 1.0, 0);
-      layers.outfits.open = open;
-      g.add(open);
-
-      // Full body suit (rubber / stealth / yiga)
-      var suit = new THREE.Group();
-      box(suit, 0.68, 0.9, 0.38, mats.body, 0, 1.1, 0);
-      box(suit, 0.24, 0.7, 0.24, mats.body, -0.48, 1.05, 0);
-      box(suit, 0.24, 0.7, 0.24, mats.body, 0.48, 1.05, 0);
-      box(suit, 0.7, 0.35, 0.38, mats.legs, 0, 0.7, 0);
-      layers.outfits.suit = suit;
-      g.add(suit);
-
-      // Robe (mystic)
-      var robe = new THREE.Group();
-      box(robe, 0.8, 1.15, 0.48, mats.body, 0, 1.0, 0);
-      box(robe, 0.28, 0.7, 0.28, mats.body, -0.5, 1.15, 0);
-      box(robe, 0.28, 0.7, 0.28, mats.body, 0.5, 1.15, 0);
-      layers.outfits.robe = robe;
-      g.add(robe);
-
-      // Barbarian / bare midriff
-      var barb = new THREE.Group();
-      box(barb, 0.55, 0.25, 0.34, mats.body, 0, 1.35, 0);
-      box(barb, 0.5, 0.35, 0.32, mats.skin, 0, 1.05, 0);
-      box(barb, 0.22, 0.55, 0.22, mats.skin, -0.48, 1.1, 0);
-      box(barb, 0.22, 0.55, 0.22, mats.skin, 0.48, 1.1, 0);
-      // bone accents
-      box(barb, 0.7, 0.12, 0.4, mats.accent, 0, 0.78, 0);
-      box(barb, 0.08, 0.35, 0.08, mats.accent, -0.35, 1.4, 0.15);
-      box(barb, 0.08, 0.35, 0.08, mats.accent, 0.35, 1.4, 0.15);
-      layers.outfits.barbarian = barb;
-      g.add(barb);
-
-      // Hands
-      sph(g, 0.11, mats.skin, -0.48, 0.62, 0);
-      sph(g, 0.11, mats.skin, 0.48, 0.62, 0);
-
-      // Neck + head
-      cyl(g, 0.12, 0.14, 0.16, mats.skin, 0, 1.58, 0);
-      sph(g, 0.3, mats.skin, 0, 1.88, 0.02, 0.95, 1.05, 0.95);
-
-      // Jaw / chin slightly
-      sph(g, 0.16, mats.skin, 0, 1.72, 0.12, 1.1, 0.7, 0.9);
-
-      // Pointed Hylian ears
-      var earGeo = new THREE.ConeGeometry(0.07, 0.28, 7);
-      var earL = new THREE.Mesh(earGeo, mats.skin);
-      earL.position.set(-0.28, 1.9, 0.02);
-      earL.rotation.z = 0.65;
-      earL.rotation.y = 0.25;
-      g.add(earL);
-      var earR = new THREE.Mesh(earGeo, mats.skin);
-      earR.position.set(0.28, 1.9, 0.02);
-      earR.rotation.z = -0.65;
-      earR.rotation.y = -0.25;
-      g.add(earR);
-
-      // Face: brows, eyes, nose, mouth
-      box(g, 0.1, 0.03, 0.04, mats.brow, -0.1, 1.95, 0.26);
-      box(g, 0.1, 0.03, 0.04, mats.brow, 0.1, 1.95, 0.26);
-      sph(g, 0.055, mats.eyeWhite, -0.1, 1.9, 0.27, 1.1, 0.9, 0.6);
-      sph(g, 0.055, mats.eyeWhite, 0.1, 1.9, 0.27, 1.1, 0.9, 0.6);
-      sph(g, 0.035, mats.eyeIris, -0.1, 1.9, 0.3);
-      sph(g, 0.035, mats.eyeIris, 0.1, 1.9, 0.3);
-      sph(g, 0.018, mats.eyePupil, -0.1, 1.9, 0.32);
-      sph(g, 0.018, mats.eyePupil, 0.1, 1.9, 0.32);
-      // nose
-      box(g, 0.06, 0.08, 0.07, mats.skin, 0, 1.84, 0.3);
-      // mouth
-      box(g, 0.1, 0.025, 0.03, mats.lip, 0, 1.74, 0.28);
-
-      // Classic TotK hair (blonde layered)
-      sph(layers.hair, 0.32, mats.hair, 0, 2.05, -0.02, 1.15, 0.75, 1.1);
-      // bangs
-      box(layers.hair, 0.18, 0.16, 0.12, mats.hair, -0.12, 1.98, 0.22, 0.4);
-      box(layers.hair, 0.18, 0.16, 0.12, mats.hair, 0.12, 1.98, 0.22, 0.4);
-      box(layers.hair, 0.22, 0.14, 0.1, mats.hair, 0, 2.0, 0.24);
-      // sideburns / cheek hair
-      box(layers.hair, 0.1, 0.22, 0.1, mats.hair, -0.26, 1.82, 0.12);
-      box(layers.hair, 0.1, 0.22, 0.1, mats.hair, 0.26, 1.82, 0.12);
-      // back mullet-ish
-      box(layers.hair, 0.28, 0.35, 0.16, mats.hair, 0, 1.85, -0.22);
-      g.add(layers.hair);
-
-      // Headwear
-      layers.helms.hood = (function () {
-        var hg = new THREE.Group();
-        var hood = new THREE.Mesh(new THREE.SphereGeometry(0.36, 18, 14), mats.head);
-        hood.scale.set(1.08, 0.92, 1.2);
-        hood.position.set(0, 1.95, -0.04);
-        hg.add(hood);
-        box(hg, 0.55, 0.4, 0.22, mats.head, 0, 1.62, -0.24);
-        // face opening shade
-        box(hg, 0.42, 0.08, 0.1, mats.head, 0, 1.78, 0.2);
-        g.add(hg);
-        return hg;
-      })();
-
-      layers.helms.helm = (function () {
-        var hg = new THREE.Group();
-        var dome = new THREE.Mesh(new THREE.SphereGeometry(0.34, 16, 12), mats.head);
-        dome.scale.set(1.12, 0.82, 1.12);
-        dome.position.set(0, 2.0, 0);
-        hg.add(dome);
-        cyl(hg, 0.4, 0.4, 0.07, mats.accent, 0, 1.82, 0);
-        // visor
-        box(hg, 0.5, 0.12, 0.18, mats.accent, 0, 1.9, 0.22);
-        g.add(hg);
-        return hg;
-      })();
-
-      layers.helms.mask = (function () {
-        var hg = new THREE.Group();
-        box(hg, 0.52, 0.32, 0.22, mats.head, 0, 1.88, 0.2);
-        box(hg, 0.44, 0.18, 0.4, mats.head, 0, 2.05, 0);
-        // eye slits
-        box(hg, 0.14, 0.06, 0.04, mats.accent, -0.12, 1.9, 0.32);
-        box(hg, 0.14, 0.06, 0.04, mats.accent, 0.12, 1.9, 0.32);
-        g.add(hg);
-        return hg;
-      })();
-
-      layers.helms.band = (function () {
-        var hg = new THREE.Group();
-        var band = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.045, 8, 24), mats.head);
-        band.rotation.x = Math.PI / 2;
-        band.position.set(0, 1.98, 0);
-        hg.add(band);
-        box(hg, 0.14, 0.1, 0.22, mats.accent, 0.3, 1.92, 0);
-        g.add(hg);
-        return hg;
-      })();
-
-      layers.helms.crown = (function () {
-        var hg = new THREE.Group();
-        cyl(hg, 0.3, 0.34, 0.2, mats.head, 0, 2.08, 0);
-        for (var i = 0; i < 6; i++) {
-          var a = (i / 6) * Math.PI * 2;
-          box(hg, 0.05, 0.18, 0.05, mats.accent, Math.sin(a) * 0.24, 2.22, Math.cos(a) * 0.24);
-        }
-        g.add(hg);
-        return hg;
-      })();
-
-      layers.helms.feather = (function () {
-        var hg = new THREE.Group();
-        // Snowquill headdress: circlet + feathers
-        var band = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.04, 8, 20), mats.accent);
-        band.rotation.x = Math.PI / 2;
-        band.position.set(0, 1.98, 0);
-        hg.add(band);
-        box(hg, 0.08, 0.45, 0.08, mats.head, -0.05, 2.25, -0.05, 0, 0, -0.3);
-        box(hg, 0.08, 0.5, 0.08, mats.head, 0.08, 2.28, -0.02, 0, 0, 0.25);
-        box(hg, 0.06, 0.35, 0.06, mats.accent, 0, 2.2, 0.05);
-        g.add(hg);
-        return hg;
-      })();
-
-      layers.helms.none = new THREE.Group();
-      g.add(layers.helms.none);
-
-      // Cape (optional)
-      box(layers.cape, 0.7, 0.9, 0.08, mats.head, 0, 1.05, -0.28);
-      layers.cape.visible = false;
-      g.add(layers.cape);
-
-      // Hide all outfits/helms initially
-      Object.keys(layers.outfits).forEach(function (k) {
-        layers.outfits[k].visible = false;
-      });
-      Object.keys(layers.helms).forEach(function (k) {
-        layers.helms[k].visible = false;
-      });
-      layers.outfits.tunic.visible = true;
-      layers.helms.hood.visible = true;
-
-      return { group: g, layers: layers };
+      case "mask":
+        return (
+          '<g id="mask">' +
+          '<rect x="78" y="78" width="44" height="28" rx="8" fill="' +
+          fillHead +
+          '"/>' +
+          '<rect x="84" y="86" width="12" height="6" rx="2" fill="' +
+          accent +
+          '"/>' +
+          '<rect x="104" y="86" width="12" height="6" rx="2" fill="' +
+          accent +
+          '"/>' +
+          '<rect x="86" y="58" width="28" height="24" rx="6" fill="' +
+          fillHead +
+          '"/>' +
+          "</g>"
+        );
+      case "band":
+        return (
+          '<g id="band">' +
+          '<rect x="74" y="68" width="52" height="10" rx="4" fill="' +
+          fillHead +
+          '"/>' +
+          '<rect x="122" y="66" width="14" height="12" rx="3" fill="' +
+          accent +
+          '"/>' +
+          "</g>"
+        );
+      case "crown":
+        return (
+          '<g id="crown">' +
+          '<path d="M78 70 L84 52 L92 66 L100 48 L108 66 L116 52 L122 70 Z" fill="' +
+          fillHead +
+          '"/>' +
+          '<circle cx="84" cy="52" r="3" fill="' +
+          accent +
+          '"/>' +
+          '<circle cx="100" cy="48" r="3.5" fill="' +
+          accent +
+          '"/>' +
+          '<circle cx="116" cy="52" r="3" fill="' +
+          accent +
+          '"/>' +
+          "</g>"
+        );
+      case "feather":
+        return (
+          '<g id="feather">' +
+          '<rect x="74" y="66" width="52" height="9" rx="4" fill="' +
+          accent +
+          '"/>' +
+          '<path d="M96 66 Q88 30 100 28 Q108 40 104 66 Z" fill="' +
+          head +
+          '"/>' +
+          '<path d="M104 66 Q112 34 118 32 Q120 48 110 66 Z" fill="' +
+          head +
+          '" opacity="0.9"/>' +
+          '<path d="M92 66 Q80 38 78 36 Q86 50 96 66 Z" fill="' +
+          accent +
+          '" opacity="0.85"/>' +
+          "</g>"
+        );
+      case "hood":
+      default:
+        return (
+          '<g id="hood">' +
+          '<path d="M70 92 Q68 48 100 42 Q132 48 130 92 L118 100 Q100 78 82 100 Z" fill="' +
+          fillHead +
+          '"/>' +
+          '<path d="M78 100 Q100 88 122 100 L118 130 Q100 120 82 130 Z" fill="' +
+          fillHead +
+          '"/>' +
+          "</g>"
+        );
     }
+  }
 
-    function applyPreview(raw) {
-      var p = {};
-      var k;
-      for (k in DEFAULT_PREVIEW) {
-        if (Object.prototype.hasOwnProperty.call(DEFAULT_PREVIEW, k)) {
-          p[k] = DEFAULT_PREVIEW[k];
-        }
-      }
-      if (raw) {
-        for (k in raw) {
-          if (Object.prototype.hasOwnProperty.call(raw, k)) p[k] = raw[k];
-        }
-      }
-
-      setColor(mats.skin, p.skin);
-      setColor(mats.hair, p.hair);
-      setColor(mats.head, p.head);
-      setColor(mats.body, p.body);
-      setColor(mats.legs, p.legs);
-      setColor(mats.accent, p.accent);
-      setColor(mats.undershirt, p.undershirt || "#e8e0d0");
-      setColor(mats.eyeIris, p.eyes || "#3a6cb0");
-      setColor(mats.brow, p.hair);
-
-      var metal = p.metalness != null ? p.metalness : 0.05;
-      var rough = p.roughness != null ? p.roughness : 0.78;
-      setSurf(mats.head, metal, rough);
-      setSurf(mats.body, metal, rough);
-      setSurf(mats.legs, metal, rough);
-      setSurf(mats.accent, Math.min(1, metal + 0.25), Math.max(0.25, rough - 0.2));
-
-      figure.layers.hair.visible = p.hairVisible !== false;
-
-      var outfit = p.outfit || "tunic";
-      Object.keys(figure.layers.outfits).forEach(function (key) {
-        figure.layers.outfits[key].visible = key === outfit;
-      });
-      if (!figure.layers.outfits[outfit]) {
-        figure.layers.outfits.tunic.visible = true;
-      }
-
-      var style = p.style || "hood";
-      Object.keys(figure.layers.helms).forEach(function (key) {
-        figure.layers.helms[key].visible = key === style;
-      });
-      if (!figure.layers.helms[style]) {
-        figure.layers.helms.hood.visible = true;
-      }
-
-      figure.layers.cape.visible = !!p.cape;
-      if (p.cape) {
-        setColor(mats.head, p.head);
-      }
+  function buildOutfit(outfit, body, legs, accent, shirt, skin, fillBody, fillLegs, metal) {
+    switch (outfit) {
+      case "armor":
+        return (
+          '<g id="outfit-armor">' +
+          '<rect x="64" y="130" width="72" height="88" rx="10" fill="' +
+          fillBody +
+          '"/>' +
+          '<rect x="60" y="128" width="80" height="22" rx="6" fill="' +
+          accent +
+          '"/>' +
+          '<ellipse cx="62" cy="140" rx="14" ry="12" fill="' +
+          accent +
+          '"/>' +
+          '<ellipse cx="138" cy="140" rx="14" ry="12" fill="' +
+          accent +
+          '"/>' +
+          '<rect x="48" y="138" width="18" height="58" rx="6" fill="' +
+          fillBody +
+          '"/>' +
+          '<rect x="134" y="138" width="18" height="58" rx="6" fill="' +
+          fillBody +
+          '"/>' +
+          '<rect x="66" y="200" width="68" height="14" rx="4" fill="' +
+          accent +
+          '"/>' +
+          (metal
+            ? '<path d="M70 150 L130 150 L126 190 L74 190 Z" fill="#ffffff" opacity="0.12"/>'
+            : "") +
+          "</g>"
+        );
+      case "open":
+        return (
+          '<g id="outfit-open">' +
+          '<rect x="70" y="150" width="60" height="28" rx="6" fill="' +
+          shirt +
+          '"/>' +
+          '<path d="M58 130 L100 145 L70 160 Z" fill="' +
+          fillBody +
+          '"/>' +
+          '<path d="M58 130 Q50 150 56 170 L78 155 Z" fill="' +
+          accent +
+          '"/>' +
+          '<rect x="48" y="145" width="14" height="50" rx="5" fill="' +
+          skin +
+          '"/>' +
+          '<rect x="138" y="145" width="14" height="50" rx="5" fill="' +
+          skin +
+          '"/>' +
+          '<path d="M68 185 Q100 200 132 185 L128 220 Q100 235 72 220 Z" fill="' +
+          fillLegs +
+          '"/>' +
+          '<rect x="66" y="182" width="68" height="10" rx="3" fill="' +
+          accent +
+          '"/>' +
+          "</g>"
+        );
+      case "suit":
+        return (
+          '<g id="outfit-suit">' +
+          '<rect x="66" y="128" width="68" height="92" rx="12" fill="' +
+          fillBody +
+          '"/>' +
+          '<rect x="48" y="136" width="20" height="70" rx="8" fill="' +
+          fillBody +
+          '"/>' +
+          '<rect x="132" y="136" width="20" height="70" rx="8" fill="' +
+          fillBody +
+          '"/>' +
+          '<rect x="68" y="200" width="64" height="24" rx="8" fill="' +
+          fillLegs +
+          '"/>' +
+          '<line x1="100" y1="132" x2="100" y2="210" stroke="' +
+          accent +
+          '" stroke-width="2" opacity="0.5"/>' +
+          "</g>"
+        );
+      case "robe":
+        return (
+          '<g id="outfit-robe">' +
+          '<path d="M62 128 L138 128 L150 230 L50 230 Z" fill="' +
+          fillBody +
+          '"/>' +
+          '<rect x="48" y="136" width="20" height="70" rx="8" fill="' +
+          fillBody +
+          '"/>' +
+          '<rect x="132" y="136" width="20" height="70" rx="8" fill="' +
+          fillBody +
+          '"/>' +
+          '<path d="M70 128 Q100 150 130 128" fill="none" stroke="' +
+          accent +
+          '" stroke-width="3"/>' +
+          "</g>"
+        );
+      case "barbarian":
+        return (
+          '<g id="outfit-barb">' +
+          '<rect x="72" y="128" width="56" height="26" rx="6" fill="' +
+          fillBody +
+          '"/>' +
+          '<rect x="76" y="154" width="48" height="40" rx="6" fill="' +
+          skin +
+          '"/>' +
+          '<rect x="50" y="140" width="16" height="55" rx="5" fill="' +
+          skin +
+          '"/>' +
+          '<rect x="134" y="140" width="16" height="55" rx="5" fill="' +
+          skin +
+          '"/>' +
+          '<rect x="68" y="198" width="64" height="14" rx="4" fill="' +
+          accent +
+          '"/>' +
+          '<rect x="78" y="120" width="6" height="28" fill="' +
+          accent +
+          '"/>' +
+          '<rect x="116" y="120" width="6" height="28" fill="' +
+          accent +
+          '"/>' +
+          "</g>"
+        );
+      case "tunic":
+      default:
+        return (
+          '<g id="outfit-tunic">' +
+          '<rect x="68" y="130" width="64" height="78" rx="8" fill="' +
+          fillBody +
+          '"/>' +
+          '<path d="M66 200 L134 200 L140 230 L60 230 Z" fill="' +
+          fillBody +
+          '"/>' +
+          '<rect x="50" y="138" width="18" height="55" rx="6" fill="' +
+          fillBody +
+          '"/>' +
+          '<rect x="132" y="138" width="18" height="55" rx="6" fill="' +
+          fillBody +
+          '"/>' +
+          '<rect x="66" y="188" width="68" height="12" rx="3" fill="' +
+          accent +
+          '"/>' +
+          '<rect x="94" y="190" width="12" height="10" rx="2" fill="' +
+          accent +
+          '"/>' +
+          "</g>"
+        );
     }
+  }
 
-    function resize() {
-      var rect = container.getBoundingClientRect();
-      width = Math.max(1, Math.floor(rect.width));
-      height = Math.max(1, Math.floor(rect.height));
-      var dpr = Math.min(global.devicePixelRatio || 1, 2);
-      renderer.setPixelRatio(dpr);
-      renderer.setSize(width, height, false);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
+  function buildWeapon(weapon, accent, body) {
+    if (!weapon) return "";
+    if (weapon === "fierce_deity_sword") {
+      return (
+        '<g id="weapon" transform="translate(150 150) rotate(-18)">' +
+        '<rect x="0" y="0" width="8" height="90" rx="2" fill="' +
+        accent +
+        '"/>' +
+        '<rect x="-4" y="88" width="16" height="18" rx="2" fill="' +
+        body +
+        '"/>' +
+        '<path d="M4 0 L10 -20 L4 -14 L-2 -20 Z" fill="' +
+        accent +
+        '"/>' +
+        "</g>"
+      );
     }
-
-    function frame() {
-      if (!running) return;
-      if (!dragging && autoSpin) {
-        root.rotation.y += 0.01;
-      } else if (!dragging && Math.abs(vel) > 0.0004) {
-        root.rotation.y += vel;
-        vel *= 0.94;
-      }
-      renderer.render(scene, camera);
-      raf = requestAnimationFrame(frame);
+    if (weapon === "traveler_shield") {
+      return (
+        '<g id="weapon" transform="translate(42 160)">' +
+        '<ellipse cx="0" cy="20" rx="16" ry="22" fill="' +
+        accent +
+        '" stroke="' +
+        body +
+        '" stroke-width="3"/>' +
+        "</g>"
+      );
     }
+    return "";
+  }
 
-    function start() {
-      if (running) return;
-      running = true;
-      resize();
-      raf = requestAnimationFrame(frame);
+  function createPreview(container) {
+    function showSet(set) {
+      var p = mergePreview(set && set.preview);
+      container.innerHTML = buildSvg(p, set && set.name);
     }
 
     function stop() {
-      running = false;
-      if (raf) cancelAnimationFrame(raf);
-      raf = 0;
+      /* 2D static: nothing to animate */
     }
 
-    function onPointerDown(e) {
-      dragging = true;
-      autoSpin = false;
-      vel = 0;
-      lastX = e.clientX != null ? e.clientX : e.touches[0].clientX;
-      container.classList.add("is-dragging");
-    }
-    function onPointerMove(e) {
-      if (!dragging) return;
-      var x =
-        e.clientX != null
-          ? e.clientX
-          : e.touches && e.touches[0]
-            ? e.touches[0].clientX
-            : lastX;
-      var dx = x - lastX;
-      lastX = x;
-      var delta = dx * 0.012;
-      root.rotation.y += delta;
-      vel = delta;
-      if (e.cancelable) e.preventDefault();
-    }
-    function onPointerUp() {
-      dragging = false;
-      container.classList.remove("is-dragging");
-      setTimeout(function () {
-        if (!dragging) autoSpin = true;
-      }, 1600);
-    }
-
-    var el = renderer.domElement;
-    el.addEventListener("pointerdown", onPointerDown);
-    global.addEventListener("pointermove", onPointerMove, { passive: false });
-    global.addEventListener("pointerup", onPointerUp);
-    el.addEventListener(
-      "touchmove",
-      function (e) {
-        if (dragging && e.cancelable) e.preventDefault();
-      },
-      { passive: false }
-    );
-
-    var ro = null;
-    if (global.ResizeObserver) {
-      ro = new ResizeObserver(function () {
-        if (running) resize();
-      });
-      ro.observe(container);
+    function resize() {
+      /* SVG scales via CSS */
     }
 
     return {
-      showSet: function (set) {
-        applyPreview((set && set.preview) || null);
-        start();
-        resize();
-      },
+      showSet: showSet,
       stop: stop,
-      start: start,
+      start: function () {},
       resize: resize,
       dispose: function () {
-        stop();
-        el.removeEventListener("pointerdown", onPointerDown);
-        global.removeEventListener("pointermove", onPointerMove);
-        global.removeEventListener("pointerup", onPointerUp);
-        if (ro) ro.disconnect();
-        renderer.dispose();
-        if (renderer.domElement.parentNode) {
-          renderer.domElement.parentNode.removeChild(renderer.domElement);
-        }
+        container.innerHTML = "";
       },
     };
   }
