@@ -88,6 +88,16 @@
         refresh();
       },
       refresh: refresh,
+      clear: clear,
+      setVisible: function (visible) {
+        if (visible) {
+          if (!totkMap.map.hasLayer(cluster)) totkMap.map.addLayer(cluster);
+          refresh();
+        } else {
+          clear();
+          if (totkMap.map.hasLayer(cluster)) totkMap.map.removeLayer(cluster);
+        }
+      },
       getAll: function () {
         return allKoroks;
       },

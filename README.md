@@ -1,6 +1,11 @@
-# 王国之泪 · 呀哈哈地图
+# 王国之泪助手
 
-可在 iPhone Safari（或「添加到主屏幕」）使用的 HTML5 地图：在地表 / 天空 / 地底显示呀哈哈位置，点击查看坐标与中文找法。
+可在 iPhone Safari（或「添加到主屏幕」）使用的 HTML5 应用：
+
+- **呀哈哈地图**：地表 / 天空 / 地底显示呀哈哈位置，点击查看坐标与中文找法，「已找到」本地勾选
+- **套装图鉴**：全部可成套防具（含 amiibo 可获取套）的说明、获取方式、套装效果与升级材料；有坐标可地图定位
+
+进度与任务见 [PLAN.md](PLAN.md)。
 
 ## 在线访问
 
@@ -21,9 +26,11 @@ python3 -m http.server 8080
 
 ```bash
 python3 scripts/build_koroks.py
+python3 scripts/build_armors.py
 ```
 
-数据源：`data/map_data_source.json`（来自社区 [lud99/totk-unexplored](https://github.com/lud99/totk-unexplored)）。
+- 呀哈哈数据源：`data/map_data_source.json`（来自社区 [lud99/totk-unexplored](https://github.com/lud99/totk-unexplored)）
+- 套装数据：`data/armors.json`（自维护简体中文，由 `scripts/build_armors.py` 生成）
 
 ## 致谢
 
@@ -31,7 +38,3 @@ python3 scripts/build_koroks.py
 - 坐标与类型：社区存档/地图研究（Marc Robledo 等）
 
 本项目为非官方粉丝工具，与任天堂无关。
-
-## 进度
-
-见 [PLAN.md](PLAN.md)。

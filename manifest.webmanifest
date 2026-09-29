@@ -1,7 +1,7 @@
 {
-  "name": "王国之泪呀哈哈地图",
-  "short_name": "呀哈哈地图",
-  "description": "在王国之泪地图上查找呀哈哈位置与找法",
+  "name": "王国之泪助手",
+  "short_name": "王国之泪助手",
+  "description": "王国之泪呀哈哈地图与套装图鉴",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f1a12",

@@ -1,4 +1,4 @@
-/* Layer switch + bottom sheet UI */
+/* Layer switch + bottom sheet UI (korok mode) */
 (function (global) {
   "use strict";
 
@@ -10,17 +10,23 @@
     var onLayerChange = options.onLayerChange;
     var onFoundChange = options.onFoundChange;
     var onHideFoundChange = options.onHideFoundChange;
-    var isFound = options.isFound || function () {
-      return false;
-    };
+    var isFound =
+      options.isFound ||
+      function () {
+        return false;
+      };
     var sheet = $("detail-sheet");
     var backdrop = $("sheet-backdrop");
     var closeBtn = $("sheet-close");
     var countEl = $("korok-count");
     var foundCheckbox = $("sheet-found");
     var hideFoundCheckbox = $("hide-found");
+    var korokBlocks = $("sheet-korok");
+    var armorBlocks = $("sheet-armor");
+    var foundRow = $("sheet-found-row");
     var currentKorok = null;
     var touchStartY = null;
+    var externalClose = options.onSheetClose;
 
     document.querySelectorAll(".layer-btn").forEach(function (btn) {
       btn.addEventListener("click", function () {
@@ -49,10 +55,16 @@
       backdrop.hidden = true;
       document.body.classList.remove("sheet-open");
       currentKorok = null;
+      if (externalClose) externalClose();
     }
 
     function openSheet(korok, layerLabel) {
       currentKorok = korok;
+      korokBlocks.hidden = false;
+      armorBlocks.hidden = true;
+      foundRow.hidden = false;
+      $("sheet-found-label").textContent = "已找到";
+
       $("sheet-title").textContent =
         korok.typeLabel + (korok.kind === "carry" ? "（×2）" : "");
       $("sheet-coords").textContent =
@@ -64,7 +76,8 @@
         korok.z.toFixed(1);
       $("sheet-layer").textContent = layerLabel;
       $("sheet-region").textContent = korok.region || "—";
-      $("sheet-type").textContent = korok.typeLabel + (korok.typeEn ? " / " + korok.typeEn : "");
+      $("sheet-type").textContent =
+        korok.typeLabel + (korok.typeEn ? " / " + korok.typeEn : "");
       $("sheet-howto").textContent = korok.howToFind || "暂无说明。";
       var note = $("sheet-guide-note");
       if (korok.guideStatus !== "detailed") {
