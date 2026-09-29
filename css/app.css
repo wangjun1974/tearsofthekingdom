@@ -420,10 +420,41 @@ body.mode-armor .attribution {
   text-align: center;
 }
 
-.armor-desc {
+.armor-preview-wrap {
   margin: 0 0 12px;
-  font-size: 0.95rem;
-  line-height: 1.55;
+}
+
+.armor-preview {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  border-radius: 14px;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 70%, rgba(200, 224, 122, 0.16), transparent 55%),
+    linear-gradient(180deg, #1a2e20 0%, #0f1a12 100%);
+  border: 1px solid rgba(200, 224, 122, 0.22);
+  touch-action: none;
+  user-select: none;
+}
+
+.armor-preview.is-dragging {
+  cursor: grabbing;
+}
+
+.armor-preview-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+
+.armor-preview-hint {
+  margin: 6px 2px 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-align: center;
 }
 
 .armor-pieces h3,

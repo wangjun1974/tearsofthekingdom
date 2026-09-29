@@ -1446,6 +1446,58 @@ for sid, sname, hn, bn, ln, how_base, locs, bonus in HERO_AMIIBO:
 
 assert len(SETS) == 35, f"expected 35 sets, got {len(SETS)}"
 
+# Stylized Link mannequin palette per set (not ripped game textures).
+PREVIEW = {
+    "hylian": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#4a6e38", "body": "#5b7f40", "legs": "#3a552c", "accent": "#c4a35a", "style": "hood"},
+    "snowquill": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#f4f0e8", "body": "#ece6da", "legs": "#d8d0c0", "accent": "#c45c3a", "style": "crown"},
+    "flamebreaker": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#6a6e72", "body": "#7a7e84", "legs": "#5a5e64", "accent": "#c45a2a", "style": "helm"},
+    "desert_voe": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#e8c85a", "body": "#2a2a32", "legs": "#e0c050", "accent": "#f0d878", "style": "band"},
+    "zora": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#5aa8c8", "body": "#4a98b8", "legs": "#3a7a98", "accent": "#e8f0f4", "style": "helm"},
+    "climbing": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#2a4a6a", "body": "#c45a3a", "legs": "#2a4a6a", "accent": "#e8a060", "style": "band"},
+    "froggy": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#5cb86a", "body": "#4aa85a", "legs": "#3a8a48", "accent": "#c8e878", "style": "hood"},
+    "glide": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#e8e0c8", "body": "#d8d0b8", "legs": "#c8c0a8", "accent": "#6a8aaa", "style": "mask"},
+    "rubber": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#2a2a2e", "body": "#3a3a42", "legs": "#2a2a32", "accent": "#f0d040", "style": "helm"},
+    "stealth": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#5a3a6a", "body": "#4a2a5a", "legs": "#3a1a4a", "accent": "#c8a0d0", "style": "mask"},
+    "barbarian": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#c45a2a", "body": "#a84820", "legs": "#8a3818", "accent": "#e8c060", "style": "helm"},
+    "radiant": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#2a2030", "body": "#1a1020", "legs": "#120818", "accent": "#70e0a0", "style": "mask"},
+    "soldier": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#6a7080", "body": "#5a6070", "legs": "#4a5060", "accent": "#b0a060", "style": "helm"},
+    "royal_guard": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#1a1a22", "body": "#8a1a28", "legs": "#1a1a22", "accent": "#d0a040", "style": "helm"},
+    "yiga": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#e8e8e8", "body": "#d83030", "legs": "#e8e8e8", "accent": "#202020", "style": "mask"},
+    "ember": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#e86020", "body": "#d05018", "legs": "#b04010", "accent": "#f0a040", "style": "crown"},
+    "frostbite": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#a0d8e8", "body": "#80c0d8", "legs": "#60a8c8", "accent": "#e8f8ff", "style": "crown"},
+    "charged": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#f0d040", "body": "#e0c030", "legs": "#c0a020", "accent": "#60d0f0", "style": "crown"},
+    "depths": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#3a2848", "body": "#2a1838", "legs": "#1a0828", "accent": "#9060c0", "style": "hood"},
+    "miner": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#c8a050", "body": "#8a7050", "legs": "#6a5040", "accent": "#f0e060", "style": "helm"},
+    "zonaite": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#70b888", "body": "#509868", "legs": "#407858", "accent": "#c0f0a0", "style": "helm"},
+    "mystic": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#e8b0d0", "body": "#d890c0", "legs": "#c870b0", "accent": "#f0e0f0", "style": "crown"},
+    "dark": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#101018", "body": "#181820", "legs": "#080810", "accent": "#404050", "style": "hood"},
+    "archaic": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#e8c4a0", "body": "#c4a070", "legs": "#a88858", "accent": "#8a7040", "style": "none"},
+    "evil_spirit": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#c8d0d8", "body": "#a8b0b8", "legs": "#889098", "accent": "#60a0e0", "style": "mask"},
+    "phantom": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#4a6080", "body": "#3a5070", "legs": "#2a4060", "accent": "#90b0d0", "style": "helm"},
+    "tingle": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#3080d0", "body": "#2060b0", "legs": "#185098", "accent": "#f0d040", "style": "hood"},
+    "wild": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#2a6a38", "body": "#3a8a48", "legs": "#2a5a30", "accent": "#e8c060", "style": "hood"},
+    "hero": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#2a6a38", "body": "#3a8a48", "legs": "#c84030", "accent": "#e8c060", "style": "hood"},
+    "time": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#2a6a38", "body": "#3a8a48", "legs": "#c84030", "accent": "#e8d080", "style": "hood"},
+    "wind": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#f0e8d0", "body": "#3a8a48", "legs": "#c84030", "accent": "#f0d040", "style": "hood"},
+    "twilight": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#2a6a38", "body": "#3a8a48", "legs": "#c84030", "accent": "#60a0e0", "style": "hood"},
+    "sky": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#e8e0c0", "body": "#d0c8a0", "legs": "#b8b088", "accent": "#60a0d0", "style": "hood"},
+    "awakening": {"skin": "#e8c4a0", "hair": "#f2d060", "head": "#e8d8a0", "body": "#3a8a48", "legs": "#c84030", "accent": "#f0e060", "style": "mask"},
+    "fierce_deity": {"skin": "#e8e8f0", "hair": "#f0f0f8", "head": "#e8e8f0", "body": "#f0f0f8", "legs": "#d8d8e8", "accent": "#c02030", "style": "mask"},
+}
+
+DEFAULT_PREVIEW = {
+    "skin": "#e8c4a0",
+    "hair": "#f2d060",
+    "head": "#4a6e38",
+    "body": "#5b7f40",
+    "legs": "#3a552c",
+    "accent": "#c4a35a",
+    "style": "hood",
+}
+
+for s in SETS:
+    s["preview"] = dict(PREVIEW.get(s["id"], DEFAULT_PREVIEW))
+
 
 def main():
     payload = {
@@ -1453,7 +1505,8 @@ def main():
             "totalSets": len(SETS),
             "upgradable": sum(1 for s in SETS if s.get("upgradable")),
             "amiibo": sum(1 for s in SETS if s.get("amiibo")),
-            "note": "坐标为便于地图定位的近似值；获取说明为自维护简体中文摘要。",
+            "previewReady": sum(1 for s in SETS if s.get("preview")),
+            "note": "坐标为便于地图定位的近似值；获取说明为自维护简体中文摘要；preview 为风格化穿戴配色。",
         },
         "sets": SETS,
     }
